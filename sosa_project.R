@@ -15,7 +15,7 @@ require(ggtree)
 
 # load data 
 setwd('/Users/dylansosa/Documents/SLU/5.3/Data Visualization/Programs_Data/project')
-globins <- read.tree('vertebrateGlobins.tree')
+globins <- read.tree('class_combined_427_worms_phylip_phyml_tree.tree')
 
 # data exploration, partitioning 
 globins$tip.label
@@ -24,26 +24,32 @@ groupInfo # the different globins
 globinTypes <- groupOTU(globins, groupInfo) # grouped based on globin type 
 
 # re-root at outgroup
-r <- root(globinTypes, node = 218, edgelabel = TRUE)
+r <- root(globinTypes, node = 1246, edgelabel = TRUE)
 
 # draw phylogenetic tree
-# 9 types of proteins from the Globin superfamily 
+# collapse surrounding non-vertebrates 
 # here we can visualize the evolutionary history of these proteins in vertebrate species 
-ggtree(r, aes(color=group)) + 
-  # geom_text2(aes(subset=!isTip, label=node), hjust=-.3) 
-  geom_tiplab(size=1.4) + 
-  geom_cladelabel(node=201, label="Beta Hemoglobin", offset = 0.7) + 
-  geom_cladelabel(node=186, label="Alpha Hemoglobin", offset = 0.7) +
-  geom_cladelabel(node=154, label="Cytoglobin", offset = 0.7) +
-  geom_cladelabel(node=163, label="Agnathan Hemoglobin", offset = 0.7) +
-  geom_cladelabel(node=174, label="Globin-Y", offset = 0.7) +
-  geom_cladelabel(node=171, label="Globin-E", offset = 0.7) +
-  geom_cladelabel(node=224, label="Neuroglobin", offset = 0.7) +
-  geom_cladelabel(node=256, label="AndroGb", offset = 0.05) +
-  geom_cladelabel(node=219, label="Outgroup", offset = 0.7, extend = 1.8) +
-  geom_cladelabel(node=141, label="Myoglobin", offset = 0.7, extend = 2.1) +
-  scale_color_manual(labels = groupInfo, 
+g <- ggtree(r) 
+c1 <- collapse(g,node = 1246 )
+c2 <- collapse(c1,node = 1247 )
+globinTree <- c2 +
+  # geom_text2(aes(subset=!isTip, label=node), hjust=-.3) +
+  geom_point2(aes(subset=(node == 1247)), size=5, shape=23, fill="purple") +
+  geom_point2(aes(subset=(node == 1246)), size=5, shape=23, fill="purple") +
+  geom_tiplab(size=1.4) +
+  geom_cladelabel(node=1319, label="Beta Hgb", offset = 0.7) +
+  geom_cladelabel(node=1336, label="Alpha Hgb", offset = 0.7) +
+  geom_cladelabel(node=1300, label="Cytoglobin", offset = 0.7) +
+  geom_cladelabel(node=1310, label="Agnathan Hgb", offset = 0.7) +
+  geom_cladelabel(node=1352, label="Globin-Y", offset = 0.7) +
+  geom_cladelabel(node=1364, label="Globin-E", offset = 0.7) +
+  geom_cladelabel(node=1297, label="Outgroup", offset = 0.7, extend = 1.8) +
+  geom_cladelabel(node=1367, label="Mgb", offset = 0.7, extend = 2.1) +
+  scale_color_manual(labels = groupInfo,
                      values = lacroix_palette("Pamplemousse",type = "continuous", n=length(groupInfo)+1))
+
+globinTree
+
 
 # load teneurin data 
 teneurins <- read.tree('teneurins.tree')
@@ -87,4 +93,5 @@ ggtree(teneurins,layout = 'daylight') +
   geom_hilight_encircle(node = 102) +
   geom_hilight_encircle(node = 111, fill = 'darkgreen') +
   geom_hilight_encircle(node = 109, fill = 'brown') 
+
 
